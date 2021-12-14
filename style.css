@@ -100,3 +100,7 @@ body {
 .animate {
     animation: popUp 1s linear;
 }
+
+.game-board.\.intense {
+    background-color: #d11b1b;
+}

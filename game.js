@@ -35,11 +35,13 @@ function gamePlay() {
         victory: false,
         y: gameGridRows / 2,
         score: 0,
+        move: 25
     }
     var player2State = {
         victory: true,
         y: gameGridRows / 2,
         score: 0,
+        move: 1.5
     }
 
     var round = 1
@@ -69,20 +71,31 @@ function gamePlay() {
             isMoveDown = true
         }
     }
-    
+    if(player1State.score >= 10 || player2State.score >= 10) {
+        gameBoard.classList.add('.intense')
+        ballMove = {
+            right: { x: 2, y: 0 },
+            left: { x: -2, y: 0 },
+            down: { x: 0, y: 2 },
+            up: { x: 0, y: -2 },     
+        }
+        player1State.move = player1State.move * 2
+    }
+
+
     // control button
     window.addEventListener('keydown', function (e) {
         switch (e.key) {
             case ("ArrowUp"): {
                 if (player1State.y >= 15) {
-                    player1State.y -= 25
+                    player1State.y -= player1State.move
                     player1.style.gridRowStart = player1State.y
                 }
             }
                 break
             case ("ArrowDown"): {
                 if (player1State.y <= 885) {
-                    player1State.y += 25
+                    player1State.y += player1State.move
                     player1.style.gridRowStart = player1State.y
                 }
             }
@@ -91,10 +104,10 @@ function gamePlay() {
     })
 
 
-    var co1 = 0, co2 = 0
+    var co1 = 0, co2 = 0, speed1 = player1State.move, speed2 = player2State.move 
     var isUp = true, isDown = false
     var ballInterval = setInterval(function () {
-        if (player1State.score == 10 || player2State.score == 10) {
+        if (player1State.score == 20 || player2State.score == 20) {
             round += 1
             player2State.score = 0
             player1State.score = 0
@@ -102,10 +115,29 @@ function gamePlay() {
             co2 = 0
             score1.innerHTML = `<div class="animate"><span>${player1State.score}</span>`
             score2.innerHTML = `<div class="animate"><span>${player2State.score}</span>`
-
+            gameBoard.classList.remove('.intense')
             heading.innerHTML = `ROUND<span class="round">${round}</span>`
+            ballMove = {
+                right: { x: 1, y: 0 },
+                left: { x: -1, y: 0 },
+                down: { x: 0, y: 1 },
+                up: { x: 0, y: -1 },     
+            }
+            player1State.move = speed1 
+            player2State.move = speed2
         }
 
+        if(player1State.score == 10 || player1State.score == 10) {
+            gameBoard.classList.add('.intense')
+            ballMove = {
+                right: { x: 2, y: 0 },
+                left: { x: -2, y: 0 },
+                down: { x: 0, y: 2 },
+                up: { x: 0, y: -2 },     
+            }
+            player1State.move = speed1 * 2
+            player2State.move = speed2 * 2
+        }
 
         if (isMoveRight) {
             ballPosition.x += ballMove.right.x
@@ -203,12 +235,12 @@ function gamePlay() {
         if (ballPosition.x >= gameGridRows / 2) {
 
             if (player2State.y > ballPosition.y) {
-                player2State.y -= 1.5
+                player2State.y -= player2State.move
                 player2.style.gridRowStart = player2State.y
             }
 
             if (player2State.y < ballPosition.y - 100) {
-                player2State.y += 1.5
+                player2State.y += player2State.move
                 player2.style.gridRowStart = player2State.y
             }
         }
